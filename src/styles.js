@@ -46,6 +46,7 @@ export const Container = styled.div`
             margin: auto;
             margin-bottom: 30px;
             font-size: 55px;
+            color: ${props => props.secMinutes <= 0 ? 'red' : 'white'};
         }
     }
 

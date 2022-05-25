@@ -15,6 +15,7 @@ const App = () => {
   const [breakSeconds, setBreakSeconds] = useState(59)
   const [isPaused, setIsPaused] = useState(true)
   const [isBreak, setIsBreak] = useState(false)
+  const [isRefresh, setIsRefresh] = useState(false)
 
   useEffect(() => {
     setSecMinutes(viewMinutes)
@@ -23,34 +24,49 @@ const App = () => {
   useEffect(() => {
       let interval = setInterval(() => {
         clearInterval(interval)
-        
-        if (secSeconds === 0) {
-          if (secMinutes !== 0) {
-            setSecSeconds(59)
-            setSecMinutes(secMinutes - 1)
-          } else {
-            const minutes = isBreak ? 24 : breakMinutes - 1
-            const seconds = breakSeconds
-            
-            setSecMinutes(minutes)
-            setSecSeconds(seconds)
-            setIsBreak(!isBreak)
-          }
+        if (isRefresh) {
+          setSecMinutes(viewMinutes)
+          setSecSeconds(0)
+          setIsPaused(true)
+          setIsBreak(false)
         } else {
-          setSecSeconds(secSeconds - 1)
-      }
+          if (isPaused === false) {
+            
+            if (secSeconds === 0) {
+              if (secMinutes !== 0) {
+                setSecSeconds(59)
+                setSecMinutes(secMinutes - 1)
+              } else {
+                const minutes = isBreak ? viewMinutes - 1 : breakMinutes - 1
+                const seconds = breakSeconds
+                
+                setSecMinutes(minutes)
+                setSecSeconds(seconds)
+                setIsBreak(!isBreak)
+              }
+            } else {
+              setSecSeconds(secSeconds - 1)
+            }
+          }
+        }
     }, 1000)
     
   }, [!isPaused && secSeconds])
 
+  const refreshPaused = () => {
+    if (isPaused === true) {
+      setIsRefresh(true)
+      setSecMinutes(viewMinutes)
+      setSecSeconds(0)
+      setIsBreak(false)
+    }
+  }
 
   const secTimerMinutes = secMinutes < 10 ? `0${secMinutes}` : secMinutes;
   const secTimerSeconds = secSeconds < 10 ? `0${secSeconds}` : secSeconds;
-  const breakTimerMinutes = breakMinutes < 10 ? `0${breakMinutes}` : breakMinutes;
-  const breakTimerSeconds = breakSeconds < 10 ? `0${breakSeconds}` : breakSeconds;
 
   return (
-    <C.Container>
+    <C.Container secMinutes={secMinutes}>
       <h1 className='header'>Pomodoro Timer</h1>
       
       <div className='breakLength'>
@@ -78,12 +94,12 @@ const App = () => {
       </div>
 
       <div className='timer'>
-        <h3>Session</h3>
+        <h3>{isBreak ? 'Break' : 'Session'}</h3>
         <h1>{secTimerMinutes}:{secTimerSeconds}</h1>
       </div>
 
       <div className='pause-play-refresh'>
-        <button onClick={() => setIsPaused(false)}>
+        <button onClick={() => {return setIsPaused(false), setIsRefresh(false)}}>
           <Play />
         </button>
 
@@ -91,7 +107,7 @@ const App = () => {
           <Pause />
         </button> 
           
-        <button>
+        <button onClick={refreshPaused}>
           <Refresh />
         </button>         
       </div>
