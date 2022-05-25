@@ -16,6 +16,10 @@ export const Container = styled.div`
         width: 70%; 
         text-align: center;     
     }
+    h3 {
+        font-size: 20px;
+    }
+
     .increase-decrease {
         display: flex;
         align-items: center;

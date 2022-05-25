@@ -13,9 +13,11 @@ const App = () => {
   const [secSeconds, setSecSeconds] = useState(0)
   const [breakMinutes, setBreakMinutes] = useState(5)
   const [breakSeconds, setBreakSeconds] = useState(59)
+  const [LongBreakMinutes, setLongBreakMinutes] = useState(15)
   const [isPaused, setIsPaused] = useState(true)
   const [isBreak, setIsBreak] = useState(false)
   const [isRefresh, setIsRefresh] = useState(false)
+  const [sessionsCounter, setSessionsCounter] = useState(1)
 
   useEffect(() => {
     setSecMinutes(viewMinutes)
@@ -29,6 +31,7 @@ const App = () => {
           setSecSeconds(0)
           setIsPaused(true)
           setIsBreak(false)
+          setSessionsCounter(0)
         } else {
           if (isPaused === false) {
             
@@ -37,12 +40,23 @@ const App = () => {
                 setSecSeconds(59)
                 setSecMinutes(secMinutes - 1)
               } else {
-                const minutes = isBreak ? viewMinutes - 1 : breakMinutes - 1
-                const seconds = breakSeconds
-                
-                setSecMinutes(minutes)
-                setSecSeconds(seconds)
-                setIsBreak(!isBreak)
+                if (sessionsCounter === 7) {
+                  const minutes = LongBreakMinutes - 1
+                  const seconds = breakSeconds
+                  
+                  setSecMinutes(minutes)
+                  setSecSeconds(seconds)
+                  setIsBreak(true)
+                  setSessionsCounter(0)
+                } else {
+                  const minutes = isBreak ? viewMinutes - 1 : breakMinutes - 1
+                  const seconds = breakSeconds
+                  
+                  setSessionsCounter(sessionsCounter + 1)
+                  setSecMinutes(minutes)
+                  setSecSeconds(seconds)
+                  setIsBreak(!isBreak)
+                }
               }
             } else {
               setSecSeconds(secSeconds - 1)
@@ -59,6 +73,7 @@ const App = () => {
       setSecMinutes(viewMinutes)
       setSecSeconds(0)
       setIsBreak(false)
+      setSessionsCounter(0)
     }
   }
 
@@ -71,18 +86,7 @@ const App = () => {
       
       <div className='breakLength'>
         <div>
-          <h3>Break length</h3>
-          <div className='increase-decrease'>
-
-            <button onClick={() => setBreakMinutes(breakMinutes + 1)}><ArrowUp /></button> 
-            <p>{breakMinutes}</p>
-            <button onClick={() => setBreakMinutes(breakMinutes - 1)}><ArrowDown /></button> 
-          
-          </div>        
-        </div>
-
-        <div>
-          <h3>Session length</h3>
+          <h3>Session</h3>
             <div className='increase-decrease'>
 
               <button onClick={() => setViewMinutes(viewMinutes + 1)}><ArrowUp /></button> 
@@ -91,6 +95,29 @@ const App = () => {
 
             </div>
         </div>
+
+        <div>
+          <h3>Short break</h3>
+          <div className='increase-decrease'>
+
+            <button onClick={() => setBreakMinutes(breakMinutes + 1)}><ArrowUp /></button> 
+            <p>{breakMinutes}</p>
+            <button onClick={() => setBreakMinutes(breakMinutes - 1)}><ArrowDown /></button> 
+          
+          </div>        
+        </div>
+          
+        <div>
+          <h3>Long break</h3>
+            <div className='increase-decrease'>
+
+              <button onClick={() => setLongBreakMinutes(LongBreakMinutes + 1)}><ArrowUp /></button> 
+              <p>{LongBreakMinutes}</p>
+              <button onClick={() => setLongBreakMinutes(LongBreakMinutes - 1)}><ArrowDown /></button> 
+            
+            </div>     
+        </div>
+
       </div>
 
       <div className='timer'>
